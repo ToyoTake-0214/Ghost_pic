@@ -43,7 +43,6 @@ class PlantBoardsController < ApplicationController
 
   def water
     @plant_board.update!(last_watered_on: Date.current)
-    redirect_to plant_boards_path
   end
 
 

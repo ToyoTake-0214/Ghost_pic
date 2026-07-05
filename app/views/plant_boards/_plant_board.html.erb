@@ -1,12 +1,12 @@
 <div class="p-4 md:w-1/3">
-  <div class="flex h-full flex-col overflow-hidden rounded-lg border-2 border-gray-200 border-opacity-60">
+  <div class="flex h-full flex-col overflow-hidden rounded-lg border-2 border-gray-200 border-opacity-60 bg-white">
     <%= image_tag plant_board.plant_board_image_url,
                   class: "h-72 w-full object-cover object-center" %>
 
     <div class="flex flex-1 flex-col p-6">
       <div class="mb-1 flex items-center justify-between">
         <h2 class="text-xs font-medium tracking-widest text-gray-400">
-          CATEGORY
+          MY PLANT
         </h2>
 
         <div class="flex items-center gap-3 text-gray-400">
@@ -60,29 +60,53 @@
 
       <% remaining_days = plant_board.watering_remaining_days %>
 
-      <div class="mb-6 text-sm text-gray-600">
-        <p>水やり頻度：<%= plant_board.watering_interval_days %>日ごと</p>
-
-        <% if remaining_days.nil? %>
-          <p>水やり情報が未設定です</p>
-        <% elsif remaining_days > 0 %>
-          <p>水やりまであと<%= remaining_days %>日</p>
-        <% elsif remaining_days == 0 %>
-          <p>今日水やりです</p>
+      <% unless remaining_days.nil? %>
+        <% if remaining_days.positive? %>
+          <% watering_status_text = "水やりはまだ必要ありません" %>
+          <% watering_status_detail = "次の水やりまであと#{remaining_days}日です" %>
+          <% watering_status_class = "border-green-200 bg-green-50 text-green-700" %>
+        <% elsif remaining_days.zero? %>
+          <% watering_status_text = "今日が水やり日です" %>
+          <% watering_status_detail = "今日の水やりを記録できます" %>
+          <% watering_status_class = "border-sky-200 bg-sky-50 text-sky-700" %>
         <% else %>
-          <p>水やり予定日を<%= remaining_days.abs %>日過ぎています</p>
+          <% watering_status_text = "水やりが必要です" %>
+          <% watering_status_detail = "水やり予定日を#{remaining_days.abs}日過ぎています" %>
+          <% watering_status_class = "border-red-200 bg-red-50 text-red-700" %>
         <% end %>
-      </div>
+
+        <div class="mb-6 text-sm">
+          <div class="rounded-lg border px-4 py-3 <%= watering_status_class %>">
+            <p class="font-medium">
+              <%= watering_status_text %>
+            </p>
+
+            <p class="mt-1 text-xs opacity-80">
+              <%= watering_status_detail %>
+            </p>
+
+            <p class="mt-1 text-xs opacity-80">
+              水やり頻度：<%= plant_board.watering_interval_days %>日ごと
+            </p>
+          </div>
+        </div>
+      <% end %>
 
       <div class="mt-auto space-y-3">
         <%= link_to "育成記録を見る",
                     plant_board_path(plant_board),
                     class: "inline-flex w-full items-center justify-center rounded-lg border border-green-300 bg-white px-0 py-3 text-sm font-medium text-green-700 hover:bg-green-50 focus:bg-green-50 focus:outline-hidden" %>
 
-        <%= link_to "水やり完了",
-                    water_plant_board_path(plant_board),
-                    class: "inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-sky-300 bg-sky-50 px-0 py-3 text-sm font-medium text-sky-700 hover:bg-sky-100 focus:bg-sky-100 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50",
-                    data: { turbo_method: :patch } %>
+        <% if remaining_days.nil? %>
+          <%= link_to "水やり頻度を設定する",
+                      edit_plant_board_path(plant_board),
+                      class: "inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-gray-300 bg-gray-50 px-0 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-hidden" %>
+        <% else %>
+          <%= link_to "今日の水やりを記録",
+                      water_plant_board_path(plant_board),
+                      class: "inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-sky-300 bg-sky-50 px-0 py-3 text-sm font-medium text-sky-700 hover:bg-sky-100 focus:bg-sky-100 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50",
+                      data: { turbo_method: :patch } %>
+        <% end %>
       </div>
     </div>
   </div>

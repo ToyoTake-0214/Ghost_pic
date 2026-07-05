@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "plant_boaard_#{@plant_board.id}" do %>
+  <%= render "plant_boards/plant_board", plant_board: @plant_board %>
+<% end %>

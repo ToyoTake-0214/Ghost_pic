@@ -25,7 +25,7 @@
                     "水やり頻度",
                     class: "block mb-2 text-sm font-medium text-foreground" %>
         <%= f.select :watering_interval_days,
-                     [["1日ごと", 1], ["2日ごと", 2], ["3日ごと", 3], ["4日ごと", 4], ["5日ごと", 5], ["6日ごと", 6], ["7日ごと", 7]],
+                     (1..30).map { |day| ["#{day}日ごと", day] },
                      { include_blank: "選択してください" },
                      class: "py-3 px-4 pe-9 block w-full bg-layer border-layer-line rounded-lg text-sm text-foreground focus:border-primary-focus focus:ring-primary-focus disabled:opacity-50 disabled:pointer-events-none bg-white" %>
       </div>
